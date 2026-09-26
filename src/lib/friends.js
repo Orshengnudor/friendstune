@@ -1,5 +1,8 @@
 import { createPublicClient, http, parseAbiItem } from 'viem';
-import { robinhoodChain, GENESIS_ADDRESS, GENERATIONS_ADDRESS, FULL_ABI } from './chain';
+import {
+  robinhoodChain, GENESIS_ADDRESS, GENERATIONS_ADDRESS, FULL_ABI,
+  FAMILIES_REGISTRY_ADDRESS, FAMILIES_REGISTRY_ABI, GENERATION_FAMILY_NAMES,
+} from './chain';
 
 const publicClient = createPublicClient({
   chain: robinhoodChain,
@@ -140,6 +143,21 @@ function normalizeImage(image) {
 // direct attempt at the richer trait functions. Every source is optional;
 // generation and tokenId are the only values the music engine can always
 // count on.
+// Family lives on a separate registry, and only exists for Generations,
+// confirmed against FriendSDK's own source. Returns a real name, a null
+// (no data available), never a guess.
+async function readFamily(collection, id) {
+  if (collection !== 'generations') return null;
+  try {
+    const familyId = await publicClient.readContract({
+      address: FAMILIES_REGISTRY_ADDRESS, abi: FAMILIES_REGISTRY_ABI, functionName: 'familyOf', args: [id],
+    });
+    return GENERATION_FAMILY_NAMES[Number(familyId)] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getFriendData(collection, tokenId) {
   const address = addressFor(collection);
   const id = BigInt(tokenId);
@@ -147,7 +165,7 @@ export async function getFriendData(collection, tokenId) {
   const [tokenURI, generation, family, activationTier, state] = await Promise.all([
     publicClient.readContract({ address, abi: FULL_ABI, functionName: 'tokenURI', args: [id] }).catch(() => null),
     publicClient.readContract({ address, abi: FULL_ABI, functionName: 'generation', args: [id] }).catch(() => null),
-    publicClient.readContract({ address, abi: FULL_ABI, functionName: 'family', args: [id] }).catch(() => null),
+    readFamily(collection, id),
     publicClient.readContract({ address, abi: FULL_ABI, functionName: 'activationTier', args: [id] }).catch(() => null),
     publicClient.readContract({ address, abi: FULL_ABI, functionName: 'state', args: [id] }).catch(() => null),
   ]);

@@ -95,11 +95,17 @@ export function deriveComposition(friend) {
     ? Array.from({ length: STEPS }, (_, i) => i % 2 === 1)
     : null;
 
+  const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const rootNoteName = `${NOTE_NAMES[rootMidi % 12]}${Math.floor(rootMidi / 12) - 1}`;
+
   return {
     label: `${friend.collection} #${friend.tokenId}`,
     bpm,
     waveform,
     scaleName,
+    rootNoteName,
+    layerCount,
+    percussion,
     melody,
     bass,
     arpeggio,

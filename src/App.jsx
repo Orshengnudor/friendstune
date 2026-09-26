@@ -4,6 +4,7 @@ import { ConnectKitButton } from 'connectkit';
 import FriendPicker from './components/FriendPicker';
 import ScanBay from './components/ScanBay';
 import TraitReadout from './components/TraitReadout';
+import SpecSheet from './components/SpecSheet';
 import Player from './components/Player';
 import { verifyOwnership, getFriendData } from './lib/friends';
 import { deriveComposition } from './lib/music';
@@ -78,10 +79,13 @@ export default function App() {
 
         {isConnected && stage === 'ready' && friendData && (
           <div className="result-layout">
-            <ScanBay friend={friendData} />
-            <div className="result-side">
-              <TraitReadout friend={friendData} />
+            <div className="result-media">
+              <ScanBay friend={friendData} />
               <Player friend={friendData} composition={composition} onBack={reset} />
+            </div>
+            <div className="result-data">
+              <TraitReadout friend={friendData} />
+              <SpecSheet composition={composition} />
             </div>
           </div>
         )}

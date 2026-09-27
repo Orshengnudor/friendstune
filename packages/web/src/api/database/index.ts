@@ -1,1 +1,1 @@
-export { db } from "./__client";
+export { db } from "./__client.js";

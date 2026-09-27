@@ -1,9 +1,9 @@
 import { ORPCError } from "@orpc/server";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
-import { base } from "../__core/app";
-import { db } from "../database";
-import { friendDownloads, friendLikes, friendStats } from "../database/schema";
+import { base } from "../__core/app.js";
+import { db } from "../database/index.js";
+import { friendDownloads, friendLikes, friendStats } from "../database/schema.js";
 
 /**
  * The charts API. Shared, public counters for every Friend: likes, plays,
